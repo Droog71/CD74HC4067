@@ -5,17 +5,13 @@
 
 #include <Adafruit_NeoPixel.h>
 
-#define S0 18
-#define S1 19
-#define S2 22
-#define S3 23
 #define COM 34
 #define NP_PIN 4
 #define NUMPIXELS 16
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, NP_PIN, NEO_GRB + NEO_KHZ800);
 
-const uint8_t controlPins[] = { S0, S1, S2, S3 };
+const uint8_t controlPins[] = { 25, 26, 19, 18 };
 
 const uint8_t muxChannels [16][4] = {
   {0,0,0,0},
@@ -48,10 +44,10 @@ float readMux(int channel)
 
 void setup()
 {
-  pinMode(S0, OUTPUT);
-  pinMode(S1, OUTPUT);
-  pinMode(S2, OUTPUT);
-  pinMode(S3, OUTPUT);
+  for (int i = 0; i < 4; ++i)
+  {
+    pinMode(controlPins[i], OUTPUT);
+  }
   pixels.begin();
 }
 

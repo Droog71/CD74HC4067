@@ -1,8 +1,8 @@
 // CD74HC4067 Demultiplexing
 // https://www.ti.com/lit/ds/symlink/cd74hc4067.pdf
 
-const uint8_t adcPins [] = { 33, 32, 35, 34 };
-const uint8_t controlPins[] = { 18, 19, 22, 23 };
+const uint8_t adcPins [] = { A0, A1, A2, A3 };
+const uint8_t controlPins[] = { 2, 3, 4, 5 };
 
 void setup()
 {
