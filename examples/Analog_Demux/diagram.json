@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "author": "Maverick",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "chip-CD74HC4067",
+      "id": "CD74HC4067",
+      "top": 192.2,
+      "left": 82.96,
+      "attrs": { "analog_demux": "1" }
+    },
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 319.76, "left": 85.58, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": 89.64, "left": -52.12, "attrs": {} }
+  ],
+  "connections": [
+    [ "CD74HC4067:GND", "esp:GND.1", "black", [ "h11.12", "v268.49" ] ],
+    [ "esp:3V3", "CD74HC4067:VCC", "red", [ "v0.2", "h24.7", "v-291.5", "h-144.61", "v22.77" ] ],
+    [ "esp:D18", "CD74HC4067:S0", "gold", [ "h33.86", "v-162.28" ] ],
+    [ "esp:D19", "CD74HC4067:S1", "#8f4814", [ "h44.29", "v-157.15" ] ],
+    [ "esp:D22", "CD74HC4067:S2", "blue", [ "h54.07", "v-100.7" ] ],
+    [ "esp:D23", "CD74HC4067:S3", "purple", [ "h63.52", "v-92" ] ],
+    [ "CD74HC4067:E", "CD74HC4067:GND", "black", [ "h-31.35", "v-42.23", "h161.66", "v23.32" ] ],
+    [ "pot1:VCC", "CD74HC4067:VCC", "red", [ "v0" ] ],
+    [ "pot1:GND", "CD74HC4067:E", "black", [ "v0" ] ],
+    [ "pot1:SIG", "CD74HC4067:COM", "orange", [ "v0" ] ],
+    [ "CD74HC4067:I0", "esp:D33", "orange", [ "h-36", "v171.88" ] ],
+    [ "CD74HC4067:I1", "esp:D32", "orange", [ "h-28.11", "v152.78" ] ],
+    [ "CD74HC4067:I2", "esp:D35", "orange", [ "h-20.23", "v133.88" ] ],
+    [ "CD74HC4067:I3", "esp:D34", "orange", [ "h-12.35", "v24.17" ] ]
+  ],
+  "dependencies": {}
+}

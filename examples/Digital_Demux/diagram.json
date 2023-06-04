@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "author": "Maverick",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "chip-CD74HC4067", "id": "CD74HC4067", "top": 192.2, "left": 82.96, "attrs": {} },
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 319.76, "left": 85.58, "attrs": {} },
+    {
+      "type": "wokwi-led-bar-graph",
+      "id": "bargraph1",
+      "top": 217.23,
+      "left": 3.09,
+      "rotate": 180,
+      "attrs": { "color": "BCYR" }
+    }
+  ],
+  "connections": [
+    [ "CD74HC4067:GND", "esp:GND.1", "black", [ "h11.12", "v268.49" ] ],
+    [ "esp:3V3", "CD74HC4067:VCC", "red", [ "v0.2", "h24.7", "v-291.5", "h-144.61", "v22.77" ] ],
+    [ "esp:D18", "CD74HC4067:S0", "gold", [ "h33.86", "v-162.28" ] ],
+    [ "esp:D19", "CD74HC4067:S1", "#8f4814", [ "h44.29", "v-157.15" ] ],
+    [ "esp:D22", "CD74HC4067:S2", "blue", [ "h54.07", "v-100.7" ] ],
+    [ "esp:D23", "CD74HC4067:S3", "purple", [ "h63.52", "v-92" ] ],
+    [ "CD74HC4067:E", "CD74HC4067:GND", "black", [ "h-31.35", "v-42.23", "h161.66", "v23.32" ] ],
+    [ "CD74HC4067:I0", "bargraph1:A10", "orange", [ "h0" ] ],
+    [ "CD74HC4067:I1", "bargraph1:A9", "orange", [ "h0" ] ],
+    [ "CD74HC4067:I2", "bargraph1:A8", "orange", [ "h0" ] ],
+    [ "bargraph1:A7", "CD74HC4067:I3", "orange", [ "h0" ] ],
+    [ "CD74HC4067:I4", "bargraph1:A6", "orange", [ "h0" ] ],
+    [ "CD74HC4067:I5", "bargraph1:A5", "orange", [ "h0" ] ],
+    [ "CD74HC4067:I6", "bargraph1:A4", "orange", [ "h0" ] ],
+    [ "CD74HC4067:I7", "bargraph1:A3", "orange", [ "h0" ] ],
+    [ "CD74HC4067:I8", "bargraph1:A2", "orange", [ "h0" ] ],
+    [ "bargraph1:C10", "bargraph1:C9", "black", [ "h-8.9", "v9.6" ] ],
+    [ "bargraph1:C9", "bargraph1:C8", "black", [ "h-8.1", "v9.49", "h-0.6" ] ],
+    [ "bargraph1:C2", "bargraph1:C3", "black", [ "h-8.28", "v-9.6" ] ],
+    [ "bargraph1:C4", "bargraph1:C3", "black", [ "h-8.28", "v9.6" ] ],
+    [ "bargraph1:C5", "bargraph1:C4", "black", [ "h-8.3", "v7.77" ] ],
+    [ "bargraph1:C6", "bargraph1:C5", "black", [ "h-8.7", "v9.71" ] ],
+    [ "bargraph1:C7", "bargraph1:C6", "black", [ "h-8.5", "v7.42" ] ],
+    [ "bargraph1:C8", "bargraph1:C7", "black", [ "h-8.57", "v9.6" ] ],
+    [ "bargraph1:C10", "CD74HC4067:E", "black", [ "h-8.57", "v-9.04" ] ],
+    [ "CD74HC4067:COM", "CD74HC4067:VCC", "red", [ "h-20.63", "v8.79" ] ]
+  ],
+  "dependencies": {}
+}
