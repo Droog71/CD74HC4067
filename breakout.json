@@ -6,7 +6,7 @@
   "width": 40.343,
   "height": 13.25,
   
-  "chips": [{ "id": "chip", "type": "github:Droog71/CD74HC4067@0.0.2" }],
+  "chips": [{ "id": "chip", "type": "github:Droog71/CD74HC4067@0.0.3" }],
 
   "pins": {
     "I15": { "x": 1.5, "y": 12, "target": "chip:I15" },

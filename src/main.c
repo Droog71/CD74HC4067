@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//! Channel pin names.
 const char* pin_names_I [16] = { 
   "I0", "I1", "I2", "I3",
   "I4", "I5", "I6", "I7", 
@@ -13,6 +14,7 @@ const char* pin_names_I [16] = {
   "I12", "I13", "I14","I15"
 };
 
+//! Chip data.
 typedef struct {
   pin_t  I[16];
   pin_t  S[4];
@@ -23,77 +25,120 @@ typedef struct {
   uint32_t analog_demux;
 } chip_data_t;
 
+//! Returns true if VCC and GND are properly connected.
 bool power_connected(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
   return pin_read(chip->VCC) && !pin_read(chip->GND);
 }
 
+//! Called when E pin is high or the chip is not powered correctly.
+void off_state(void *data)
+{
+  chip_data_t *chip = (chip_data_t*)data;
+  chip->COM = pin_init("COM", ANALOG);
+  pin_dac_write(chip->COM, 0);
+    
+  for (int i = 0; i < 16; ++i)
+  {
+    chip->I[i] = pin_init(pin_names_I[i], ANALOG);
+  }
+}
+
+//! Returns the currently selected channel.
+uint8_t selected_channel(void *data)
+{
+    chip_data_t *chip = (chip_data_t*)data;
+    bool S0 = pin_read(chip->S[0]);
+    bool S1 = pin_read(chip->S[1]);
+    bool S2 = pin_read(chip->S[2]);
+    bool S3 = pin_read(chip->S[3]);
+    return S3 << 3 | S2 << 2 | S1 << 1 | S0;
+}
+
+//! Sets COM and all of the channel pins to analog mode.
+void analog_mode(void *data)
+{
+  chip_data_t *chip = (chip_data_t*)data;
+  chip->COM = pin_init("COM", ANALOG);
+      
+  for (int i = 0; i < 16; ++i)
+  {
+    chip->I[i] = pin_init(pin_names_I[i], ANALOG);
+  }
+}
+
+//! Sets the selected channel to the same voltage read on the COM pin.
+void analog_demux(void *data)
+{
+  chip_data_t *chip = (chip_data_t*)data;
+
+  for (int i = 0; i < 16; ++i)
+  {
+    pin_dac_write(chip->I[i], 0);
+  }
+  
+  uint8_t channel = selected_channel(chip);
+  pin_dac_write(chip->I[channel], pin_adc_read(chip->COM));
+}
+
+//! Drives the selected channel HIGH. Called when COM is also HIGH.
+void digital_demux(void *data)
+{
+  chip_data_t *chip = (chip_data_t*)data;
+
+  for (int i = 0; i < 16; ++i)
+  {
+    chip->I[i] = pin_init(pin_names_I[i], OUTPUT);
+    pin_write(chip->I[i], LOW);
+  }
+  
+  uint8_t channel = selected_channel(chip);
+  pin_write(chip->I[channel], HIGH);
+}
+
+//! Sets the COM pin to the same voltage read on the selected channel.
+void mux(void *data)
+{
+  chip_data_t *chip = (chip_data_t*)data;
+  uint8_t channel = selected_channel(chip);
+  pin_dac_write(chip->COM, pin_adc_read(chip->I[channel]));
+}
+
+//! Main loop.
 void chip_timer_callback(void *data) 
 {
   chip_data_t *chip = (chip_data_t*)data;
 
   if (power_connected(chip) && !pin_read(chip->E))
   {
-    bool S0 = pin_read(chip->S[0]);
-    bool S1 = pin_read(chip->S[1]);
-    bool S2 = pin_read(chip->S[2]);
-    bool S3 = pin_read(chip->S[3]);
-
-    int pinIndex = S3 << 3 | S2 << 2 | S1 << 1 | S0;
     chip->COM = pin_init("COM", INPUT_PULLDOWN);
 
     if (pin_read(chip->COM))
     {
-      for (int i = 0; i < 16; ++i)
-      {
-        chip->I[i] = pin_init(pin_names_I[i], OUTPUT);
-        pin_write(chip->I[i], LOW);
-      }
-      
-      pin_write(chip->I[pinIndex], HIGH);
+      digital_demux(chip);
     }
     else
     {
-      chip->COM = pin_init("COM", ANALOG);
-      
-      for (int i = 0; i < 16; ++i)
-      {
-        chip->I[i] = pin_init(pin_names_I[i], ANALOG);
-      }
+      analog_mode(chip);
 
       if (attr_read(chip->analog_demux))
       {
-        for (int i = 0; i < 16; ++i)
-        {
-          pin_dac_write(chip->I[i], 0);
-        }
-        
-        pin_dac_write(chip->I[pinIndex], pin_adc_read(chip->COM));
+        analog_demux(chip);
       }
       else
       {
-        pin_dac_write(chip->COM, pin_adc_read(chip->I[pinIndex]));
+        mux(chip);
       }
     }
   }
   else
   {
-    chip->COM = pin_init("COM", ANALOG);
-    pin_dac_write(chip->COM, 0);
-      
-    for (int i = 0; i < 16; ++i)
-    {
-      chip->I[i] = pin_init(pin_names_I[i], ANALOG);
-    }
-
-    for (int i = 0; i < 16; ++i)
-    {
-      pin_dac_write(chip->I[i], 0);
-    }
+    off_state(chip);
   }
 }
 
+//! Chip initialization.
 void chip_init() 
 {
   chip_data_t *chip = (chip_data_t*)malloc(sizeof(chip_data_t));
