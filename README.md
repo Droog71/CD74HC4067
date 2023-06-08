@@ -1,5 +1,5 @@
 # CD74HC4067
-CD74HC4067 16-Channel Analog Multiplexer/Demultiplexer for Wokwi<br />
+CD74HC4067 16-Channel Analog Multiplexer/Demultiplexer for Wokwi<br /><br />
 Datasheet -> https://www.ti.com/lit/ds/symlink/cd74hc4067.pdf<br />
 Wokwi -> https://wokwi.com/<br /><br />
 
