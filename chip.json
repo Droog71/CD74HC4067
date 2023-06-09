@@ -1,7 +1,7 @@
 {
   "name": "CD74HC4067",
   "author": "Maverick",
-  "docs": "https://www.ti.com/lit/ds/symlink/cd74hc4067.pdf",
+  "docs": "https://github.com/Droog71/CD74HC4067/blob/main/README.md",
   "pins": [
     "COM",
     "VCC",
