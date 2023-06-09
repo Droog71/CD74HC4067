@@ -27,7 +27,7 @@ Driving LEDs -> https://wokwi.com/projects/366745528502490113<br />
 Demultiplexing with analog values -> https://wokwi.com/projects/366644917441189889<br /><br /><br />
 
 <h2>Attributes</h2>
-When used for demultiplexing analog values on Wokwi, set the "analog_demux" attribute to 1 in diagram.json<br />
+When used for demultiplexing analog values on Wokwi, set the "analogDemux" attribute to 1 in diagram.json<br />
 
 ```
 {
@@ -36,7 +36,7 @@ When used for demultiplexing analog values on Wokwi, set the "analog_demux" attr
   "top": 103.19,
   "left": 61.05,
   "rotate": 90,
-  "attrs": { "analog_demux": "1" }
+  "attrs": { "analogDemux": "1" }
 }
 ```
 
