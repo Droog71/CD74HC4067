@@ -21,7 +21,7 @@ typedef struct {
   pin_t  VCC;
   pin_t  GND;
   pin_t  COM;
-  pin_t  E;
+  pin_t  EN;
   uint32_t analogDemux;
 } chip_data_t;
 
@@ -110,7 +110,7 @@ void chip_timer_callback(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
 
-  if (power_connected(chip) && !pin_read(chip->E))
+  if (power_connected(chip) && !pin_read(chip->EN))
   {
     chip->COM = pin_init("COM", INPUT_PULLDOWN);
 
@@ -156,7 +156,7 @@ void chip_init()
   chip->COM = pin_init("COM", INPUT);
   chip->VCC = pin_init("VCC", INPUT);
   chip->GND = pin_init("GND", INPUT);
-  chip->E = pin_init("E", INPUT);
+  chip->EN = pin_init("EN", INPUT);
 
   chip->analogDemux = attr_init("analogDemux", 0);
 
