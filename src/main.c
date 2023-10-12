@@ -21,7 +21,7 @@ typedef struct {
   pin_t  VCC;
   pin_t  GND;
   pin_t  COM;
-  pin_t  E;
+  pin_t  EN;
   uint32_t analogDemux;
 } chip_data_t;
 
@@ -69,7 +69,7 @@ void analog_mode(void *data)
 }
 
 //! Sets the selected channel to the same voltage read on the COM pin.
-void analogDemux(void *data)
+void analog_demux(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
 
@@ -110,7 +110,7 @@ void chip_timer_callback(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
 
-  if (power_connected(chip) && !pin_read(chip->E))
+  if (power_connected(chip) && !pin_read(chip->EN))
   {
     pin_mode(chip->COM, INPUT_PULLDOWN);
 
@@ -124,7 +124,7 @@ void chip_timer_callback(void *data)
 
       if (attr_read(chip->analogDemux))
       {
-        analogDemux(chip);
+        analog_demux(chip);
       }
       else
       {
@@ -156,7 +156,7 @@ void chip_init()
   chip->COM = pin_init("COM", INPUT);
   chip->VCC = pin_init("VCC", INPUT);
   chip->GND = pin_init("GND", INPUT);
-  chip->E = pin_init("E", INPUT);
+  chip->EN = pin_init("EN", INPUT);
 
   chip->analogDemux = attr_init("analogDemux", 0);
 
