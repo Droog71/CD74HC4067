@@ -22,7 +22,7 @@ typedef struct {
   pin_t  GND;
   pin_t  COM;
   pin_t  E;
-  uint32_t analog_demux;
+  uint32_t analogDemux;
 } chip_data_t;
 
 //! Returns true if VCC and GND are properly connected.
@@ -69,7 +69,7 @@ void analog_mode(void *data)
 }
 
 //! Sets the selected channel to the same voltage read on the COM pin.
-void analog_demux(void *data)
+void analogDemux(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
 
@@ -122,9 +122,9 @@ void chip_timer_callback(void *data)
     {
       analog_mode(chip);
 
-      if (attr_read(chip->analog_demux))
+      if (attr_read(chip->analogDemux))
       {
-        analog_demux(chip);
+        analogDemux(chip);
       }
       else
       {
@@ -158,7 +158,7 @@ void chip_init()
   chip->GND = pin_init("GND", INPUT);
   chip->E = pin_init("E", INPUT);
 
-  chip->analog_demux = attr_init("analog_demux", 0);
+  chip->analogDemux = attr_init("analogDemux", 0);
 
   const timer_config_t config = 
   {
