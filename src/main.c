@@ -21,8 +21,8 @@ typedef struct {
   pin_t  VCC;
   pin_t  GND;
   pin_t  COM;
-  pin_t  EN;
-  uint32_t analogDemux;
+  pin_t  E;
+  uint32_t analog_demux;
 } chip_data_t;
 
 //! Returns true if VCC and GND are properly connected.
@@ -36,12 +36,12 @@ bool power_connected(void *data)
 void off_state(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
-  chip->COM = pin_init("COM", ANALOG);
+  pin_mode(chip->COM, ANALOG);
   pin_dac_write(chip->COM, 0);
     
   for (int i = 0; i < 16; ++i)
   {
-    chip->I[i] = pin_init(pin_names_I[i], ANALOG);
+    pin_mode(chip->I[i], ANALOG);
   }
 }
 
@@ -60,16 +60,16 @@ uint8_t selected_channel(void *data)
 void analog_mode(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
-  chip->COM = pin_init("COM", ANALOG);
+  pin_mode(chip->COM, ANALOG);
       
   for (int i = 0; i < 16; ++i)
   {
-    chip->I[i] = pin_init(pin_names_I[i], ANALOG);
+    pin_mode(chip->I[i], ANALOG);
   }
 }
 
 //! Sets the selected channel to the same voltage read on the COM pin.
-void analogDemux(void *data)
+void analog_demux(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
 
@@ -89,7 +89,7 @@ void digital_demux(void *data)
 
   for (int i = 0; i < 16; ++i)
   {
-    chip->I[i] = pin_init(pin_names_I[i], OUTPUT);
+    pin_mode(chip->I[i], OUTPUT);
     pin_write(chip->I[i], LOW);
   }
   
@@ -110,9 +110,9 @@ void chip_timer_callback(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
 
-  if (power_connected(chip) && !pin_read(chip->EN))
+  if (power_connected(chip) && !pin_read(chip->E))
   {
-    chip->COM = pin_init("COM", INPUT_PULLDOWN);
+    pin_mode(chip->COM, INPUT_PULLDOWN);
 
     if (pin_read(chip->COM))
     {
@@ -122,9 +122,9 @@ void chip_timer_callback(void *data)
     {
       analog_mode(chip);
 
-      if (attr_read(chip->analogDemux))
+      if (attr_read(chip->analog_demux))
       {
-        analogDemux(chip);
+        analog_demux(chip);
       }
       else
       {
@@ -156,9 +156,9 @@ void chip_init()
   chip->COM = pin_init("COM", INPUT);
   chip->VCC = pin_init("VCC", INPUT);
   chip->GND = pin_init("GND", INPUT);
-  chip->EN = pin_init("EN", INPUT);
+  chip->E = pin_init("E", INPUT);
 
-  chip->analogDemux = attr_init("analogDemux", 0);
+  chip->analog_demux = attr_init("analog_demux", 0);
 
   const timer_config_t config = 
   {
