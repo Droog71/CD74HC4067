@@ -22,6 +22,7 @@ typedef struct {
   pin_t  GND;
   pin_t  COM;
   pin_t  EN;
+  uint32_t floatingSig;
   uint32_t analogDemux;
 } chip_data_t;
 
@@ -36,12 +37,20 @@ bool power_connected(void *data)
 void off_state(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
-  pin_mode(chip->COM, ANALOG);
-  pin_dac_write(chip->COM, 0);
+
+  if (attr_read(chip->floatingSig))
+  {
+    pin_mode(chip->COM, INPUT);
+  }
+  else
+  {
+    pin_mode(chip->COM, ANALOG);
+    pin_dac_write(chip->COM, 0);
+  }
     
   for (int i = 0; i < 16; ++i)
   {
-    pin_mode(chip->I[i], ANALOG);
+    pin_mode(chip->I[i], INPUT);
   }
 }
 
@@ -158,6 +167,7 @@ void chip_init()
   chip->GND = pin_init("GND", INPUT);
   chip->EN = pin_init("EN", INPUT);
 
+  chip->floatingSig = attr_init("floatingSig", 0);
   chip->analogDemux = attr_init("analogDemux", 0);
 
   const timer_config_t config = 
