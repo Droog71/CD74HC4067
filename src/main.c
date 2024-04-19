@@ -24,6 +24,7 @@ typedef struct {
   pin_t  EN;
   uint32_t floatingSig;
   uint32_t analogDemux;
+  uint32_t digitalMode;
 } chip_data_t;
 
 //! Returns true if VCC and GND are properly connected.
@@ -77,6 +78,18 @@ void analog_mode(void *data)
   }
 }
 
+//! Sets COM and all of the channel pins to digital mode.
+void digital_mode(void *data)
+{
+  chip_data_t *chip = (chip_data_t*)data;
+  pin_mode(chip->COM, OUTPUT);
+      
+  for (int i = 0; i < 16; ++i)
+  {
+    pin_mode(chip->I[i], INPUT);
+  }
+}
+
 //! Sets the selected channel to the same voltage read on the COM pin.
 void analog_demux(void *data)
 {
@@ -111,7 +124,14 @@ void mux(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
   uint8_t channel = selected_channel(chip);
-  pin_dac_write(chip->COM, pin_adc_read(chip->I[channel]));
+  if (attr_read(chip->digitalMode))
+  {
+    pin_write(chip->COM, pin_read(chip->I[channel]));
+  }
+  else
+  {
+    pin_dac_write(chip->COM, pin_adc_read(chip->I[channel]));
+  }
 }
 
 //! Main loop.
@@ -129,8 +149,15 @@ void chip_timer_callback(void *data)
     }
     else
     {
-      analog_mode(chip);
-
+      if (attr_read(chip->digitalMode))
+      {
+        digital_mode(chip);
+      }
+      else
+      {
+        analog_mode(chip);  
+      }
+      
       if (attr_read(chip->analogDemux))
       {
         analog_demux(chip);
@@ -169,6 +196,7 @@ void chip_init()
 
   chip->floatingSig = attr_init("floatingSig", 0);
   chip->analogDemux = attr_init("analogDemux", 0);
+  chip->digitalMode = attr_init("digitalMode", 0);
 
   const timer_config_t config = 
   {
