@@ -27,7 +27,7 @@ Driving LEDs -> https://wokwi.com/projects/366745528502490113<br />
 Demultiplexing with analog values -> https://wokwi.com/projects/366644917441189889<br /><br /><br />
 
 <h2>Attributes</h2>
-When used for demultiplexing analog values on Wokwi, set the "analogDemux" attribute to 1 in diagram.json<br />
+The CD74HC4067 has multiple attributes that can be configured via editing the diagram.json file.<br /><br />
 
 ```
 {
@@ -37,17 +37,24 @@ When used for demultiplexing analog values on Wokwi, set the "analogDemux" attri
   "left": 61.05,
   "rotate": 90,
   "attrs": { "analogDemux": "1" }
+  "attrs": { "digitalMode": "0" }
+  "attrs": { "floatingSig": "0" }
 }
 ```
 
+<h4>analogDemux</h4>
+When used for demultiplexing analog values, set the "analogDemux" attribute to 1.<br />
+
 This is only needed if you are connecting an analog device <br />
-such as a potentiometer to the SIG / COM pin on the CD74HC4067 chip.<br /><br />
-In this use case, the voltage produced by the potentiometer is directd<br />
+such as a potentiometer to the SIG / COM pin on the CD74HC4067 chip.<br />
+In this mode, the voltage produced by the potentiometer is directed<br />
 to the selected channel of the CD74HC4067 chip.<br /><br />
 
-When demultiplexing digital values on Wokwi for the purpose of driving LEDs<br />
-or other digitally controlled devies, no special attributes are required.<br /><br />
+<h4>digitalMode</h4>
+If you want to use digitalRead() to read the SIG / COM pin when multiplexing with<br /> digital devices such as buttons, slide switches or dip switches, set the "digitalMode"<br />
+attribute to 1 in diagram.json. In this mode, the SIG / COM pin is a digital output.<br /><br />
 
-When using the chip for multiplexing, no special attributes are required.<br /><br />
-
-
+<h4>floatingSig</h4>
+If you want to connect multiple CD74HC4067 devices to the same ADC pin, set the<br />
+"floatingSig" attribute to 1 in diagram.json. In this mode, the SIG / COM pin is<br />
+in a high impedance state when the enable pin (E) is driven low.<br /><br />
