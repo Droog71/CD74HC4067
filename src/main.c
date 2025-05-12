@@ -205,5 +205,5 @@ void chip_init()
   };
 
   timer_t timer_id = timer_init(&config);
-  timer_start(timer_id, 10000, true);
+  timer_start(timer_id, 100, true);
 }
