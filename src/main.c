@@ -25,6 +25,8 @@ typedef struct {
   uint32_t floatingSig;
   uint32_t analogDemux;
   uint32_t digitalMode;
+  timer_t timer;
+  uint16_t timer_interval;
 } chip_data_t;
 
 //! Returns true if VCC and GND are properly connected.
@@ -108,6 +110,12 @@ void analog_demux(void *data)
 void digital_demux(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
+  if (chip->timer_interval != 1000)
+  {
+	  chip->timer_interval = 1000;
+	  timer_stop(chip->timer);
+	  timer_start(chip->timer, chip->timer_interval, true);  
+  }
 
   for (int i = 0; i < 16; ++i)
   {
@@ -149,6 +157,13 @@ void chip_timer_callback(void *data)
     }
     else
     {
+      if (chip->timer_interval != 100)
+      {
+        chip->timer_interval = 100;
+        timer_stop(chip->timer);
+        timer_start(chip->timer, chip->timer_interval, true);
+      }
+	  
       if (attr_read(chip->digitalMode))
       {
         digital_mode(chip);
@@ -204,6 +219,7 @@ void chip_init()
     .user_data = chip,
   };
 
-  timer_t timer_id = timer_init(&config);
-  timer_start(timer_id, 100, true);
+  chip->timer_interval = 100;
+  chip->timer = timer_init(&config);
+  timer_start(chip->timer, chip->timer_interval, true);
 }
