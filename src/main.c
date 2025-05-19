@@ -22,9 +22,10 @@ typedef struct {
   pin_t  GND;
   pin_t  COM;
   pin_t  EN;
+  uint32_t digitalMux;
   uint32_t floatingSig;
   uint32_t analogDemux;
-  uint32_t digitalMode;
+  uint32_t digitalDemux;
   timer_t timer;
   uint16_t timer_interval;
 } chip_data_t;
@@ -69,7 +70,7 @@ uint8_t selected_channel(void *data)
 }
 
 //! Sets COM and all of the channel pins to analog mode.
-void analog_mode(void *data)
+void analog_mux_mode(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
   pin_mode(chip->COM, ANALOG);
@@ -81,7 +82,7 @@ void analog_mode(void *data)
 }
 
 //! Sets COM and all of the channel pins to digital mode.
-void digital_mode(void *data)
+void digital_mux_mode(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
   pin_mode(chip->COM, OUTPUT);
@@ -106,7 +107,7 @@ void analog_demux(void *data)
   pin_dac_write(chip->I[channel], pin_adc_read(chip->COM));
 }
 
-//! Drives the selected channel HIGH. Called when COM is also HIGH.
+//! Sets the COM pin to the same logic level as the selected channel.
 void digital_demux(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
@@ -119,12 +120,12 @@ void digital_demux(void *data)
 
   for (int i = 0; i < 16; ++i)
   {
-    pin_mode(chip->I[i], OUTPUT);
-    pin_write(chip->I[i], LOW);
+    pin_mode(chip->I[i], INPUT);
   }
   
   uint8_t channel = selected_channel(chip);
-  pin_write(chip->I[channel], HIGH);
+  pin_mode(chip->I[channel], OUTPUT);
+  pin_write(chip->I[channel], pin_read(chip->COM));
 }
 
 //! Sets the COM pin to the same voltage read on the selected channel.
@@ -132,7 +133,7 @@ void mux(void *data)
 {
   chip_data_t *chip = (chip_data_t*)data;
   uint8_t channel = selected_channel(chip);
-  if (attr_read(chip->digitalMode))
+  if (attr_read(chip->digitalMux))
   {
     pin_write(chip->COM, pin_read(chip->I[channel]));
   }
@@ -151,7 +152,7 @@ void chip_timer_callback(void *data)
   {
     pin_mode(chip->COM, INPUT_PULLDOWN);
 
-    if (pin_read(chip->COM))
+    if (attr_read(chip->digitalDemux))
     {
       digital_demux(chip);
     }
@@ -164,13 +165,13 @@ void chip_timer_callback(void *data)
         timer_start(chip->timer, chip->timer_interval, true);
       }
 	  
-      if (attr_read(chip->digitalMode))
+      if (attr_read(chip->digitalMux))
       {
-        digital_mode(chip);
+        digital_mux_mode(chip);
       }
       else
       {
-        analog_mode(chip);  
+        analog_mux_mode(chip);  
       }
       
       if (attr_read(chip->analogDemux))
@@ -209,9 +210,10 @@ void chip_init()
   chip->GND = pin_init("GND", INPUT);
   chip->EN = pin_init("EN", INPUT);
 
+  chip->digitalMux = attr_init("digitalMux", 0);
   chip->floatingSig = attr_init("floatingSig", 0);
   chip->analogDemux = attr_init("analogDemux", 0);
-  chip->digitalMode = attr_init("digitalMode", 0);
+  chip->digitalDemux = attr_init("digitalDemux", 0);
 
   const timer_config_t config = 
   {

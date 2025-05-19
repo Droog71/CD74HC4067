@@ -36,11 +36,23 @@ The CD74HC4067 has multiple attributes that can be configured via editing the di
   "top": 103.19,
   "left": 61.05,
   "rotate": 90,
-  "attrs": { "analogDemux": "1" }
-  "attrs": { "digitalMode": "0" }
+  "attrs": { "digitalMux": "1" }
+  "attrs": { "analogDemux": "0" }
+  "attrs": { "digitalDemux": "0" }
   "attrs": { "floatingSig": "0" }
 }
 ```
+
+<h4>digitalMux</h4>
+If you want to use digitalRead() to read the SIG / COM pin when multiplexing with<br /> digital devices such as buttons, slide switches or dip switches, set the "digitalMux"<br />
+attribute to 1 in diagram.json. In this mode, the SIG / COM pin is a digital output.<br /><br />
+
+<h4>digitalDemux</h4>
+When used for demultiplexing digital values, set the "digitalDemux" attribute to 1.<br /> 
+In this mode, the logic level of the selected channel is equal to the logic<br /> level of the SIG / COM pin.
+Wokwi simulates LEDs with digital logic, so use this mode<br />
+if you want to use the multiplexer with LEDs.
+<br /><br />
 
 <h4>analogDemux</h4>
 When used for demultiplexing analog values, set the "analogDemux" attribute to 1.<br />
@@ -49,10 +61,6 @@ This is only needed if you are connecting an analog device <br />
 such as a potentiometer to the SIG / COM pin on the CD74HC4067 chip.<br />
 In this mode, the voltage produced by the potentiometer is directed<br />
 to the selected channel of the CD74HC4067 chip.<br /><br />
-
-<h4>digitalMode</h4>
-If you want to use digitalRead() to read the SIG / COM pin when multiplexing with<br /> digital devices such as buttons, slide switches or dip switches, set the "digitalMode"<br />
-attribute to 1 in diagram.json. In this mode, the SIG / COM pin is a digital output.<br /><br />
 
 <h4>floatingSig</h4>
 If you want to connect multiple CD74HC4067 devices to the same ADC pin, set the<br />
